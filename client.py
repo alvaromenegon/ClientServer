@@ -10,17 +10,34 @@ def client_program():
     #port = 5000 
     print('Conectando ao servidor em ' + host + ' na porta ' + str(port))
     client_socket = socket.socket() 
-    client_socket.connect((host, port)) 
+    try:
+        client_socket.connect((host, port)) 
+    except Exception as e:
+        print('Erro ao conectar ao servidor: ' + str(e))
+        return
     print('Conectado ao servidor ' + host + ' na porta ' + str(port))
-    serverName = client_socket.recv(1024).decode()
-    print('Conectado ao Servidor ' + serverName)
-    client_socket.send(clientName.encode()) 
+    #serverName = client_socket.recv(1024).decode()
+    #print('Conectado ao Servidor ' + serverName)
+    #client_socket.send(clientName.encode()) 
     message = input(clientName + ": ")  #Mensagem
+    
 
     while message.lower().strip() != 'tchau':
-        client_socket.send(message.encode())  
-        data = client_socket.recv(1024).decode()  
-        print('Recebido do servidor '+serverName+': ' + data)  
+        message = message + '\n'
+        try:
+            print('Enviando: ' + message)
+            client_socket.send(message.encode())  
+        except Exception as e:
+            print('Erro ao enviar mensagem: ' + str(e))
+            break
+        try:
+            data = client_socket.recv(1024).decode()  
+            print('Recebido: ' + data)
+        except Exception as e:
+            print('Erro ao receber mensagem: ' + str(e))
+            break
+        #print('Recebido do servidor '+serverName+': ' + data)  
+        #print('Recebido: ' + data)  
         message = input(clientName+": ")  
     client_socket.close()
 
